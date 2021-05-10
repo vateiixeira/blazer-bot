@@ -5,15 +5,19 @@ from time import sleep
 from csv import writer
 from datetime import datetime
 from selenium.common import exceptions
+from selenium.common.exceptions import NoSuchElementException
 
 LOCATION_CHROME_DRIVER_WINDOWS = 'C:\chromedriver_win32\chromedriver.exe'
-
+LOCATION_CHROME_DRIVER_LINUX ='/home/vinicius/dev/chromedriver_linux64/chromedriver'
 
 class Blazer:
     def __init__(self):        
         #chorme_options.add_argument("--headless")
         self.link_crash = 'https://blaze.com/pt/games/crash'
-        self.d = webdriver.Chrome(LOCATION_CHROME_DRIVER_WINDOWS) 
+        self.chorme_options = Options()
+        self.chorme_options.add_argument("--no-sandbox") # linux only
+        self.chorme_options.add_argument("--headless")
+        self.d = webdriver.Chrome(LOCATION_CHROME_DRIVER_LINUX, options=self.chorme_options) 
 
     def append_list_as_row(self,file_name, list_of_elem):
         # Open file in append mode
@@ -35,7 +39,8 @@ class Blazer:
             #     x.find_element_by_xpath('.//div[@class="title"]/a')
             try:
                 data_new = driver.find_element_by_xpath('/html/body/div[1]/main/div[1]/div[3]/div[2]/div[1]/div/div/div[1]/div[2]/div[2]/div[2]/div[1]/span[1]').text
-            except exceptions.NoSuchelementException:
+            except NoSuchElementException as exc:
+                print(exc)
                 driver.get(self.link_crash)
                 sleep(4)
                 continue
